@@ -27,5 +27,5 @@ func DeleteCourse(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "Pelajaran berhasil dihapus"})
 }

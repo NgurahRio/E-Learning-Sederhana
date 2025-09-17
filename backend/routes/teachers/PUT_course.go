@@ -9,6 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type CourseUpdateResp struct {
+	IDCourse    uint   `json:"id_course"`
+	TeacherName string `json:"teacher_name"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
 func PutCourse(c *gin.Context) {
 	uid := c.GetUint("userID")
 	id := c.Param("id")
@@ -23,15 +30,35 @@ func PutCourse(c *gin.Context) {
 		return
 	}
 
-	var req map[string]interface{}
+	var req struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := db.DB.Model(&course).Updates(req).Error; err != nil {
+	if req.Title != "" {
+		course.Title = req.Title
+	}
+	if req.Description != "" {
+		course.Description = req.Description
+	}
+
+	if err := db.DB.Save(&course).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update"})
 		return
 	}
-	c.JSON(http.StatusOK, course)
+
+	db.DB.Preload("Teacher").First(&course, course.IDCourse)
+
+	resp := CourseUpdateResp{
+		IDCourse:    course.IDCourse,
+		TeacherName: course.Teacher.Name,
+		Title:       course.Title,
+		Description: course.Description,
+	}
+
+	c.JSON(http.StatusOK, resp)
 }
