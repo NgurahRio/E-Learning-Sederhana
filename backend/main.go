@@ -1,10 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"backend/db"
-	"backend/enroll"
-	"backend/routes/courses"
+	"backend/middleware"
 	"backend/routes/students"
+	"backend/routes/teachers"
 	"backend/routes/users"
 
 	"github.com/gin-gonic/gin"
@@ -12,33 +15,48 @@ import (
 
 func main() {
 	db.Connect()
+
 	r := gin.Default()
 
-	// Health check
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
-	})
+	// Public routes
+	pub := r.Group("/api")
+	{
+		pub.POST("/users/register", users.PostUser)
+		pub.POST("/users/login", users.PostLogin)
+	}
 
-	// Users
-	r.GET("/api/users", users.GetUsers)
-	r.POST("/api/users", users.CreateUsers)
-	r.PUT("/api/users/:id", users.UpdateUsers)
-	r.DELETE("/api/users/:id", users.DeleteUsers)
+	// Protected routes
+	auth := r.Group("/api", middleware.JWTAuth())
+	{
+		// Users (admin only)
+		auth.GET("/users", middleware.RequireRoles("admin"), users.GetUserList)
+		auth.PUT("/users/:id", middleware.RequireRoles("admin"), users.PutUser)
+		auth.DELETE("/users/:id", middleware.RequireRoles("admin"), users.DeleteUser)
 
-	// Students
-	r.GET("/api/students", students.GetStudents)
-	r.POST("/api/students", students.CreateStudents)
-	r.PUT("/api/students/:id", students.UpdateStudents)
-	r.DELETE("/api/students/:id", students.DeleteStudents)
+		// Students
+		stu := auth.Group("/students", middleware.RequireRoles("student"))
+		{
+			stu.GET("/courses", students.GetStudentCourses)
+			stu.POST("/enroll", students.PostEnroll)
+			// stu.PUT("/profile", students.PutStudentProfile)
+		}
 
-	// Courses
-	r.GET("/api/courses", courses.GetCourse)
-	r.POST("/api/courses", courses.CreateCourse)
-	r.PUT("/api/courses/:id", courses.UpdateCourse)
-	r.DELETE("/api/courses/:id", courses.DeleteCourse)
+		// Teachers
+		tch := auth.Group("/teachers", middleware.RequireRoles("teacher"))
+		{
+			tch.GET("/my-courses", teachers.GetMyCourses)
+			tch.POST("/course", teachers.PostCourse)
+			tch.PUT("/course/:id", teachers.PutCourse)
+			tch.DELETE("/course/:id", teachers.DeleteCourse)
+		}
+	}
 
-	// Enroll
-	r.POST("/api/enroll", enroll.EnrollStudent)
-
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Println("✅ Server running on :" + port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatal(err)
+	}
 }

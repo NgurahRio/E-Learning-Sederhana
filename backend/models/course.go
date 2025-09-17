@@ -3,9 +3,11 @@ package models
 import "gorm.io/gorm"
 
 type Course struct {
+	IDCourse    uint   `gorm:"primaryKey;column:id_course"`
+	Title       string `gorm:"type:varchar(150);not null"`
+	Description string `gorm:"type:text"`
+	TeacherID   uint   `gorm:"not null"`
+
+	Teacher User `gorm:"foreignKey:TeacherID"`
 	gorm.Model
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	TeacherID   *uint     `json:"teacher_id"`
-	Students    []Student `gorm:"many2many:student_courses;" json:"students,omitempty"`
 }

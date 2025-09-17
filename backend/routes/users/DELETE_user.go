@@ -1,17 +1,21 @@
 package users
 
 import (
+	"net/http"
+
 	"backend/db"
 	"backend/models"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteUsers(c *gin.Context) {
-	if err := db.DB.Delete(&models.User{}, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete"})
+func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := db.DB.Delete(&models.User{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user"})
 		return
 	}
-	c.Status(http.StatusNoContent)
+
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
 }

@@ -1,23 +1,49 @@
 package users
 
 import (
+	"net/http"
+
 	"backend/db"
 	"backend/models"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func UpdateUsers(c *gin.Context) {
+type updateUserReq struct {
+	Name     *string `json:"name"`
+	RoleID   *uint   `json:"role_id"`
+	PhotoURL *string `json:"photo_url"`
+}
+
+func PutUser(c *gin.Context) {
+	id := c.Param("id")
+
 	var user models.User
-	if err := db.DB.First(&user, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+	if err := db.DB.First(&user, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body"})
+
+	var req updateUserReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db.DB.Save(&user)
+
+	if req.Name != nil {
+		user.Name = *req.Name
+	}
+	if req.RoleID != nil {
+		user.RoleID = *req.RoleID
+	}
+	if req.PhotoURL != nil {
+		user.PhotoURL = *req.PhotoURL
+	}
+
+	if err := db.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+		return
+	}
+
 	c.JSON(http.StatusOK, user)
 }
