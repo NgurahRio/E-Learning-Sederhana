@@ -6,8 +6,6 @@ import (
 	"os"
 	"time"
 
-	"backend/models"
-
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -49,15 +47,15 @@ func Connect() {
 		log.Fatal("❌ DB connect error:", err)
 	}
 
-	// Auto-migrate models
-	if err := DB.AutoMigrate(
-		&models.Role{},
-		&models.User{},
-		&models.Course{},
-		&models.StudentCourse{},
-	); err != nil {
-		log.Fatal("❌ AutoMigrate error:", err)
-	}
+	// // Auto-migrate models
+	// if err := DB.AutoMigrate(
+	// 	&models.Role{},
+	// 	&models.User{},
+	// 	&models.Course{},
+	// 	&models.StudentCourse{},
+	// ); err != nil {
+	// 	log.Fatal("❌ AutoMigrate error:", err)
+	// }
 
 	sqlDB, _ := DB.DB()
 	sqlDB.SetMaxOpenConns(20)

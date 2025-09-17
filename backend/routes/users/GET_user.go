@@ -15,5 +15,18 @@ func GetUserList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch users"})
 		return
 	}
-	c.JSON(http.StatusOK, users)
+
+	// mapping response agar tidak expose password
+	var response []gin.H
+	for _, u := range users {
+		response = append(response, gin.H{
+			"id":      u.IDUser,
+			"name":    u.Name,
+			"email":   u.Email,
+			"role_id": u.RoleID,
+			"role":    u.Role.RoleName,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": response})
 }

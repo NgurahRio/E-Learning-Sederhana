@@ -23,31 +23,35 @@ func PostLogin(c *gin.Context) {
 		return
 	}
 
+	// cek user by email
 	var user models.User
 	if err := db.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
 		return
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)) != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+	// cek password hash
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
 		return
 	}
 
+	// generate JWT token
 	token, err := middleware.GenerateToken(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot create token"})
 		return
 	}
 
+	// sukses
 	c.JSON(http.StatusOK, gin.H{
-		"token": token,
+		"message": "login success",
+		"token":   token,
 		"user": gin.H{
-			"id":        user.IDUser,
-			"name":      user.Name,
-			"email":     user.Email,
-			"role_id":   user.RoleID,
-			"photo_url": user.PhotoURL,
+			"id":      user.IDUser,
+			"name":    user.Name,
+			"email":   user.Email,
+			"role_id": user.RoleID,
 		},
 	})
 }
