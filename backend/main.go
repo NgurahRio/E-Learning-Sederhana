@@ -10,6 +10,7 @@ import (
 	"backend/routes/teachers"
 	"backend/routes/users"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,9 @@ func main() {
 	db.Connect()
 
 	r := gin.Default()
+
+	// aktifkan CORS supaya frontend (localhost:5173) bisa akses backend (localhost:8080)
+	r.Use(cors.Default())
 
 	// Public routes
 	pub := r.Group("/api")
@@ -38,7 +42,6 @@ func main() {
 		{
 			stu.GET("/courses", students.GetStudentCourses)
 			stu.POST("/enroll", students.PostEnroll)
-			// stu.PUT("/profile", students.PutStudentProfile)
 		}
 
 		// Teachers
