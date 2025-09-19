@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import StudentLogin from "./pages/student/Login";
-import StudentRegister from "./pages/student/Register";
-import StudentDashboard from "./pages/student/Dashboard";
-import TeacherLogin from "./pages/teacher/Login";
-import TeacherRegister from "./pages/teacher/Register";
-import TeacherDashboard from "./pages/teacher/Dashboard";
+import StudentLogin from "./pages/student/LoginStudent";
+import StudentRegister from "./pages/student/RegisterStudent";
+import StudentDashboard from "./pages/student/DashboardStudent";
+import TeacherLogin from "./pages/teacher/LoginTeacher";
+import TeacherRegister from "./pages/teacher/RegisterTeacher";
+import TeacherDashboard from "./pages/teacher/DashboardTeacher";
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 

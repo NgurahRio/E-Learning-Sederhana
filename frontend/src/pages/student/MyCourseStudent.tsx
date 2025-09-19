@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../lib/api";
+import { UserCircle } from "lucide-react"; // ✅ pakai UserCircle icon
 
 type Course = {
   id_course: number;
@@ -28,13 +29,20 @@ export default function MyCourse() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((c) => (
-            <div key={c.id_course} className="bg-gray-800 p-4 rounded-lg shadow">
-              <h3 className="text-lg font-bold mb-2">{c.title}</h3>
-              <p className="text-sm mb-2">{c.description}</p>
+            <div
+              key={c.id_course}
+              className="bg-gray-800 p-4 rounded-lg shadow flex flex-col justify-between"
+            >
+              <div>
+                <h3 className="text-lg font-bold mb-2">{c.title}</h3>
+                <p className="text-sm mb-4 text-gray-300">{c.description}</p>
+              </div>
+
               {c.teacher && (
-                <p className="text-sm italic text-gray-300">
-                  by {c.teacher.name}
-                </p>
+                <div className="flex items-center gap-2 mt-2 text-gray-200">
+                  <UserCircle className="w-6 h-6 text-white" />
+                  <p className="text-sm">{c.teacher.name}</p>
+                </div>
               )}
             </div>
           ))}

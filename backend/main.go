@@ -48,7 +48,8 @@ func main() {
 		{
 			stu.GET("/my-courses", students.GetStudentCourses)
 			stu.POST("/enroll", students.PostEnroll)
-			stu.GET("/all-courses", students.GetAllCourses) // 🔥 semua course
+			stu.GET("/all-courses", students.GetAllCourses)             // 🔥 semua course
+			stu.GET("/available-courses", students.GetAvailableCourses) // 🔥 baru
 
 		}
 

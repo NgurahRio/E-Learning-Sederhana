@@ -30,27 +30,20 @@ func PostEnroll(c *gin.Context) {
 		return
 	}
 
-	// cek apakah course ada + preload teacher
+	// langsung ambil course (karena sudah difilter di /available-courses)
 	var course models.Course
 	if err := db.DB.Preload("Teacher").First(&course, req.CourseID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "pelajaran tidak ditemukan"})
 		return
 	}
 
-	// cek apakah student sudah terdaftar di course ini
-	var existing models.StudentCourse
-	if err := db.DB.Where("student_id = ? AND course_id = ?", uid, req.CourseID).First(&existing).Error; err == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Anda sudah terdaftar di pelajaran ini"})
-		return
-	}
-
-	// buat relasi student-course baru
+	// langsung buat relasi student-course baru (tanpa cek duplikat)
 	sc := models.StudentCourse{
 		StudentID: uid,
 		CourseID:  req.CourseID,
 	}
 	if err := db.DB.Create(&sc).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to enroll"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "gagal mendaftar ke pelajaran"})
 		return
 	}
 
