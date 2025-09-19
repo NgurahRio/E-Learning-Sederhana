@@ -20,7 +20,14 @@ func main() {
 	r := gin.Default()
 
 	// aktifkan CORS supaya frontend (localhost:5173) bisa akses backend (localhost:8080)
-	r.Use(cors.Default())
+	// r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // asal frontend kamu
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// Public routes
 	pub := r.Group("/api")
@@ -40,8 +47,9 @@ func main() {
 		// Students
 		stu := auth.Group("/students", middleware.RequireRoles("student"))
 		{
-			stu.GET("/courses", students.GetStudentCourses)
+			stu.GET("/my-courses", students.GetStudentCourses)
 			stu.POST("/enroll", students.PostEnroll)
+			stu.GET("/all-courses", students.GetAllCourses) // 🔥 semua course
 		}
 
 		// Teachers

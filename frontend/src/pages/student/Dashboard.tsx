@@ -1,68 +1,36 @@
-import { useEffect, useState } from "react";
-import API from "../../lib/api";
-
-type Course = {
-  id: number;
-  name: string;
-  teacher: { name: string };
-};
+import { useState } from "react";
+import MyCourse from "./MyCourse";
+import EnrollCourse from "./EnrollCourse";
 
 export default function StudentDashboard() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await API.get("/students/courses", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCourses(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  const [activeTab, setActiveTab] = useState("my");
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-bold mb-6">🎓 Student Dashboard</h1>
-
-      {courses.length === 0 ? (
-        <p className="text-gray-600">Kamu belum mengambil course.</p>
-      ) : (
-        <ul className="space-y-3">
-          {courses.map((course) => (
-            <li
-              key={course.id}
-              className="p-4 bg-white shadow rounded flex justify-between"
-            >
-              <span>
-                {course.name} <br />
-                <span className="text-sm text-gray-500">
-                  Dosen: {course.teacher?.name}
-                </span>
-              </span>
-              <button className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
-                Unenroll
-              </button>
-            </li>
-          ))}
+    <div className="flex min-h-screen bg-gray-900 text-white">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-800 p-6">
+        <h1 className="text-xl font-bold mb-6">🎓 U Learn</h1>
+        <ul>
+          <li
+            className={`cursor-pointer mb-4 ${activeTab === "my" ? "text-yellow-400" : ""}`}
+            onClick={() => setActiveTab("my")}
+          >
+            My Course
+          </li>
+          <li
+            className={`cursor-pointer mb-4 ${activeTab === "enroll" ? "text-yellow-400" : ""}`}
+            onClick={() => setActiveTab("enroll")}
+          >
+            Enroll Course
+          </li>
         </ul>
-      )}
+      </aside>
+
+      {/* Content */}
+      <main className="flex-1 p-8">
+        {activeTab === "my" && <MyCourse />}
+        {activeTab === "enroll" && <EnrollCourse />}
+      </main>
     </div>
   );
 }
