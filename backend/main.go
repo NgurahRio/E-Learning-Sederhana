@@ -20,7 +20,6 @@ func main() {
 	r := gin.Default()
 
 	// aktifkan CORS supaya frontend (localhost:5173) bisa akses backend (localhost:8080)
-	// r.Use(cors.Default())
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, // asal frontend kamu
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -50,6 +49,7 @@ func main() {
 			stu.GET("/my-courses", students.GetStudentCourses)
 			stu.POST("/enroll", students.PostEnroll)
 			stu.GET("/all-courses", students.GetAllCourses) // 🔥 semua course
+
 		}
 
 		// Teachers
