@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import API from "../../lib/api";
+import { UserCircle } from "lucide-react"; // ✅ import icon
 
 type Course = {
   id_course: number;
   title: string;
   description: string;
+  teacher?: { name: string };
 };
 
 export default function ManageCoursesTeacher() {
@@ -81,6 +83,15 @@ export default function ManageCoursesTeacher() {
                 <h3 className="text-lg font-bold mb-2">{c.title}</h3>
                 <p className="text-sm text-gray-300">{c.description}</p>
               </div>
+
+              {/* ✅ Tambahin info guru */}
+              {c.teacher && (
+                <div className="flex items-center gap-2 mt-3 text-gray-300">
+                  <UserCircle className="w-5 h-5 text-white" />
+                  <span className="italic">{c.teacher.name}</span>
+                </div>
+              )}
+
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => startEdit(c)}
