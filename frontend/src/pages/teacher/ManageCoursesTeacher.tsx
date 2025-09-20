@@ -14,6 +14,7 @@ export default function ManageCoursesTeacher() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [confirmId, setConfirmId] = useState<number | null>(null); // ✅ state untuk konfirmasi hapus
 
   const fetchCourses = async () => {
     try {
@@ -84,7 +85,7 @@ export default function ManageCoursesTeacher() {
                 <p className="text-sm text-gray-300">{c.description}</p>
               </div>
 
-              {/* ✅ Tambahin info guru */}
+              {/* ✅ Info guru */}
               {c.teacher && (
                 <div className="flex items-center gap-2 mt-3 text-gray-300">
                   <UserCircle className="w-5 h-5 text-white" />
@@ -100,7 +101,7 @@ export default function ManageCoursesTeacher() {
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteCourse(c.id_course)}
+                  onClick={() => setConfirmId(c.id_course)} // ✅ buka modal konfirmasi
                   className="flex-1 bg-red-500 py-2 rounded hover:bg-red-600 transition"
                 >
                   Hapus
@@ -111,7 +112,7 @@ export default function ManageCoursesTeacher() {
         </div>
       )}
 
-      {/* Modal Edit */}
+      {/* Modal Edit (tetap, ga diubah) */}
       {editingCourse && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gray-900 p-6 rounded-lg w-full max-w-md">
@@ -139,6 +140,33 @@ export default function ManageCoursesTeacher() {
                 className="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-600"
               >
                 Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Modal Konfirmasi Delete */}
+      {confirmId !== null && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gray-900 p-6 rounded-lg w-full max-w-sm">
+            <h3 className="text-lg font-bold mb-4">Konfirmasi Hapus</h3>
+            <p className="mb-4">Apakah kamu yakin ingin menghapus course ini?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmId(null)}
+                className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  deleteCourse(confirmId);
+                  setConfirmId(null);
+                }}
+                className="px-4 py-2 bg-red-500 rounded hover:bg-red-600"
+              >
+                Hapus
               </button>
             </div>
           </div>

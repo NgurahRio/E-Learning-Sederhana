@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { UserCircle } from "lucide-react"; // ✅ import icon
 import API from "../../lib/api";
 
 type Course = {
@@ -35,8 +36,8 @@ export default function MyCourseTeacher() {
               <h3 className="text-lg font-bold mb-2">{c.title}</h3>
               <p className="text-sm mb-2 text-gray-300">{c.description}</p>
               {c.teacher && (
-                <p className="text-sm italic text-gray-400">
-                  by {c.teacher.name}
+                <p className="flex items-center text-sm italic text-gray-400">
+                  <UserCircle className="w-4 h-4 mr-1" /> {c.teacher.name}
                 </p>
               )}
             </div>

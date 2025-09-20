@@ -6,7 +6,7 @@ import TeacherLogin from "./pages/teacher/LoginTeacher";
 import TeacherRegister from "./pages/teacher/RegisterTeacher";
 import TeacherDashboard from "./pages/teacher/DashboardTeacher";
 import AdminLogin from "./pages/admin/Login";
-import AdminDashboard from "./pages/admin/Dashboard";
+import AdminDashboard from "./pages/admin/DashboardAdmin";
 
 // Komponen ProtectedRoute
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -31,7 +31,7 @@ function App() {
         <Route path="/teacher/login" element={<TeacherLogin />} />
         <Route path="/teacher/register" element={<TeacherRegister />} />
         <Route
-          path="/teacher/dashboardteacher"
+          path="/teacher/dashboard"
           element={
             <ProtectedRoute allowedRoles={[2]}>
               <TeacherDashboard />

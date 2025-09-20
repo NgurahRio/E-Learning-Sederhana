@@ -18,7 +18,7 @@ export default function TeacherLogin() {
         return;
       }
 
-      window.location.href = "/teacher/dashboardTeacher";
+      window.location.href = "/teacher/dashboard";
     } catch (err: any) {
       alert(err.response?.data?.error || "Login gagal");
     }

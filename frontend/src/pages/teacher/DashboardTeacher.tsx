@@ -41,15 +41,15 @@ export default function TeacherDashboard() {
           </ul>
         </div>
 
-        {/* tombol logout (samain dengan student) */}
+        {/* Logout Button */}
         <button
           onClick={() => {
             localStorage.removeItem("token");
-            window.location.href = "/";
+            window.location.href = "/teacher/login";
           }}
           className="flex items-center gap-2 text-gray-300 hover:text-red-400 transition mt-6"
         >
-          <LogOut className="w-5 h-5" /> {/* ✅ ikon sama */}
+          <LogOut className="w-5 h-5" />
           <span>Logout</span>
         </button>
       </aside>

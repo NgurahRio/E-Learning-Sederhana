@@ -1,10 +1,12 @@
 import { useState } from "react";
 import API from "../../lib/api";
 import type { LoginResponse } from "../../types/auth";
-import FormInput from "../../components/FormInput";
+import InputWithIcon from "../../components/InputWithIcon";
+import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,25 +26,43 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold text-center mb-6">🛠 Admin Login</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-gray-200 text-gray-800 p-8 rounded-lg shadow-xl w-96"
+      >
+        <h1 className="text-2xl font-bold text-center mb-6">
+          🔧 Admin Login
+        </h1>
 
-        <FormInput
+        {/* Email */}
+        <InputWithIcon
           label="Email"
           type="email"
+          placeholder="Enter your Email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          leftIcon={<Mail size={18} />}
         />
 
-        <FormInput
+        {/* Password */}
+        <InputWithIcon
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
+          placeholder="Enter your Password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          leftIcon={<Lock size={18} />}
+          rightIcon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          onRightIconClick={() => setShowPassword(!showPassword)}
         />
 
-        <button className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition">
+        {/* Button Login */}
+        <button
+          type="submit"
+          className="w-full flex justify-center items-center gap-2 bg-red-600 text-white py-2 rounded mt-4 hover:bg-red-700 transition"
+        >
+          <LogIn className="w-5 h-5" />
           Login
         </button>
       </form>
