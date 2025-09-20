@@ -17,7 +17,7 @@ export default function MyCourse() {
     API.get("/students/my-courses", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => setCourses(res.data))
+      .then((res) => setCourses(res.data || []))
       .catch(() => alert("Gagal load my courses"));
   }, []);
 

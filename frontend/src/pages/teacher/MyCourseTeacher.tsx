@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserCircle } from "lucide-react"; // ✅ import icon
+import { UserCircle } from "lucide-react";
 import API from "../../lib/api";
 
 type Course = {
@@ -11,15 +11,40 @@ type Course = {
 
 export default function MyCourseTeacher() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Token tidak ditemukan. Silakan login ulang.");
+      return;
+    }
+
     API.get("/teachers/my-courses", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => setCourses(res.data))
-      .catch(() => alert("Gagal load courses"));
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setCourses(res.data);
+        } else {
+          console.warn("⚠️ Response bukan array:", res.data);
+          setCourses([]);
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Gagal fetch my-courses:", err);
+        alert("Gagal load courses");
+        setCourses([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) {
+    return <p className="text-gray-400">Loading courses...</p>;
+  }
 
   return (
     <div>

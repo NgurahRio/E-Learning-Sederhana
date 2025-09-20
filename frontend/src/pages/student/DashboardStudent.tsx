@@ -1,14 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyCourse from "./MyCourseStudent";
 import EnrollCourse from "./EnrollCourse";
-import { LogOut } from "lucide-react"; // ✅ ikon logout
+import { LogOut } from "lucide-react";
+import API from "../../lib/api";
 
 export default function StudentDashboard() {
-  const [activeTab, setActiveTab] = useState("my");
+  const [activeTab, setActiveTab] = useState<"my" | "enroll">("my");
+  const [loadingCheck, setLoadingCheck] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/"; // redirect kalau tidak ada token
+      return;
+    }
+
+    // 👇 Hanya untuk memastikan token valid
+    API.get("/students/my-courses", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        console.log("✅ Cek token dan fetch berhasil", res.data);
+      })
+      .catch((err) => {
+        console.error("❌ Gagal fetch my-courses:", err);
+        // fallback: logout aja kalau gagal
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      })
+      .finally(() => {
+        setLoadingCheck(false);
+      });
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/"; // arahkan ke halaman login/home
+    window.location.href = "/";
   };
 
   return (
@@ -37,20 +64,26 @@ export default function StudentDashboard() {
           </ul>
         </div>
 
-        {/* Tombol Logout di bawah */}
+        {/* Logout */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 text-gray-300 hover:text-red-400 transition mt-6"
         >
-          <LogOut className="w-5 h-5" /> {/* ikon di kiri */}
+          <LogOut className="w-5 h-5" />
           <span>Logout</span>
         </button>
       </aside>
 
       {/* Content */}
       <main className="flex-1 p-8">
-        {activeTab === "my" && <MyCourse />}
-        {activeTab === "enroll" && <EnrollCourse />}
+        {loadingCheck ? (
+          <p className="text-gray-400">Loading...</p>
+        ) : (
+          <>
+            {activeTab === "my" && <MyCourse />}
+            {activeTab === "enroll" && <EnrollCourse />}
+          </>
+        )}
       </main>
     </div>
   );

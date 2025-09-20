@@ -1,11 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyCourseTeacher from "./MyCourseTeacher";
 import AddCourseTeacher from "./AddCourseTeacher";
 import ManageCoursesTeacher from "./ManageCoursesTeacher";
-import { LogOut } from "lucide-react"; // ✅ samain kayak student
+import { LogOut } from "lucide-react";
+import API from "../../lib/api";
 
 export default function TeacherDashboard() {
-  const [activeTab, setActiveTab] = useState("my");
+  const [activeTab, setActiveTab] = useState<"my" | "add" | "manage">("my");
+  const [loadingCheck, setLoadingCheck] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    API.get("/teachers/my-courses", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        const courses = res.data;
+        if (Array.isArray(courses)) {
+          // ✅ Kalau belum ada course, langsung pindah ke "add"
+          setActiveTab(courses.length === 0 ? "add" : "my");
+        } else {
+          setActiveTab("add");
+        }
+      })
+      .catch(() => {
+        setActiveTab("add"); // fallback aman
+      })
+      .finally(() => {
+        setLoadingCheck(false);
+      });
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/teacher/login";
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
@@ -43,10 +74,7 @@ export default function TeacherDashboard() {
 
         {/* Logout Button */}
         <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            window.location.href = "/teacher/login";
-          }}
+          onClick={handleLogout}
           className="flex items-center gap-2 text-gray-300 hover:text-red-400 transition mt-6"
         >
           <LogOut className="w-5 h-5" />
@@ -56,9 +84,15 @@ export default function TeacherDashboard() {
 
       {/* Content */}
       <main className="flex-1 p-8">
-        {activeTab === "my" && <MyCourseTeacher />}
-        {activeTab === "add" && <AddCourseTeacher />}
-        {activeTab === "manage" && <ManageCoursesTeacher />}
+        {loadingCheck ? (
+          <p className="text-gray-400">Loading...</p>
+        ) : activeTab === "my" ? (
+          <MyCourseTeacher />
+        ) : activeTab === "add" ? (
+          <AddCourseTeacher />
+        ) : (
+          <ManageCoursesTeacher />
+        )}
       </main>
     </div>
   );
